@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: plotting-backend
+    ports:
+      - "1234:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend:/app
+    networks:
+      - plotting-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: plotting-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - plotting-network
+    restart: unless-stopped
+
+networks:
+  plotting-network:
+    driver: bridge

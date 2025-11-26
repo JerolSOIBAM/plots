@@ -1,0 +1,268 @@
+.plot-display {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 1.5rem;
+}
+
+.plot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.plot-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.export-btn {
+  padding: 0.6rem 1rem;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.export-btn:hover {
+  background-color: #5568d3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.plot-container {
+  flex: 1;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #fafafa;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plot-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #e8f4fd;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.plot-info p {
+  margin: 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.customization-panel {
+  margin-top: 1.5rem;
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  background-color: white;
+  overflow: hidden;
+}
+
+.customization-summary {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  list-style: none;
+  transition: all 0.3s;
+}
+
+.customization-summary::-webkit-details-marker {
+  display: none;
+}
+
+.customization-summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 0.75rem;
+  transition: transform 0.3s;
+}
+
+.customization-panel[open] .customization-summary::before {
+  transform: rotate(90deg);
+}
+
+.customization-summary:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #653a91 100%);
+}
+
+.customization-content {
+  padding: 1.5rem;
+  background-color: #2a2a2a;
+}
+
+.custom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.custom-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.custom-group label {
+  font-weight: 600;
+  color: #ddd;
+  font-size: 0.9rem;
+}
+
+.custom-input {
+  padding: 0.75rem;
+  border: 2px solid #444;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #1a1a1a;
+  color: #fff;
+  transition: border-color 0.3s;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.custom-input::placeholder {
+  color: #888;
+}
+
+.font-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #444;
+}
+
+.font-section h4 {
+  margin: 0 0 1rem 0;
+  color: #667eea;
+  font-size: 1rem;
+}
+
+.font-controls-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.font-controls-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #ddd;
+  font-size: 0.85rem;
+}
+
+.font-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 2px solid #444;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: #0a0a0a;
+  color: #fff;
+  transition: border-color 0.3s;
+}
+
+.font-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.font-select {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid #444;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: #0a0a0a;
+  color: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s;
+  min-width: 120px;
+}
+
+.font-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+@media (prefers-color-scheme: dark) {
+  .plot-display {
+    background-color: #2a2a2a;
+  }
+
+  .plot-header h3 {
+    color: #fff;
+  }
+
+  .plot-container {
+    background-color: #1a1a1a;
+    border-color: #444;
+  }
+
+  .plot-info {
+    background-color: #1a3a4a;
+    border-left-color: #2196f3;
+  }
+
+  .plot-info p {
+    color: #ddd;
+  }
+}
+
+@media (max-width: 768px) {
+  .plot-display {
+    padding: 1rem;
+  }
+
+  .plot-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .export-buttons {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .export-btn {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .plot-container {
+    padding: 0.5rem;
+  }
+}
