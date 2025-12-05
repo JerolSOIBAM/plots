@@ -163,6 +163,7 @@ async def upload_file(file: UploadFile = File(...), delimiter: str = None):
         
         # Convert to JSON-serializable format
         preview_data = preview_df.replace({np.nan: None}).to_dict('records')
+        full_data = df.replace({np.nan: None}).to_dict('records')
         
         return JSONResponse({
             "success": True,
@@ -171,7 +172,8 @@ async def upload_file(file: UploadFile = File(...), delimiter: str = None):
             "columns": list(df.columns),
             "column_types": column_types,
             "preview": preview_data,
-            "preview_rows": len(preview_df)
+            "preview_rows": len(preview_df),
+            "data": full_data
         })
     
     except HTTPException:
@@ -237,6 +239,7 @@ async def fetch_from_url(request: URLRequestWithDelimiter):
         
         # Convert to JSON-serializable format
         preview_data = preview_df.replace({np.nan: None}).to_dict('records')
+        full_data = df.replace({np.nan: None}).to_dict('records')
         
         return JSONResponse({
             "success": True,
@@ -245,7 +248,8 @@ async def fetch_from_url(request: URLRequestWithDelimiter):
             "columns": list(df.columns),
             "column_types": column_types,
             "preview": preview_data,
-            "preview_rows": len(preview_df)
+            "preview_rows": len(preview_df),
+            "data": full_data
         })
     
     except requests.RequestException as e:

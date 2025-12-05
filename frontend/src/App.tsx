@@ -122,7 +122,7 @@ function App() {
                 {activeTab === 'plot' && plotConfig && (
                   <div className="plot-with-customization">
                     <PlotDisplay 
-                      data={dataInfo.preview}
+                      data={dataInfo.data}
                       config={plotConfig}
                       onConfigUpdate={setPlotConfig}
                     />

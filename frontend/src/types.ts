@@ -6,6 +6,7 @@ export interface DataInfo {
   column_types: Record<string, string>;
   preview: Record<string, any>[];
   preview_rows: number;
+  data: Record<string, any>[];
 }
 
 export interface PlotConfig {
