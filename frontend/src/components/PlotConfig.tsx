@@ -6,13 +6,14 @@ interface PlotConfigProps {
   columns: string[];
   columnTypes: Record<string, string>;
   onConfigChange: (config: PlotConfigType) => void;
+  initialConfig?: PlotConfigType;
 }
 
-function PlotConfig({ columns, columnTypes, onConfigChange }: PlotConfigProps) {
-  const [xColumn, setXColumn] = useState('');
-  const [yColumns, setYColumns] = useState<string[]>([]);
-  const [plotType, setPlotType] = useState<PlotConfigType['plotType']>('line');
-  const [differentShapes, setDifferentShapes] = useState(true);
+function PlotConfig({ columns, columnTypes, onConfigChange, initialConfig }: PlotConfigProps) {
+  const [xColumn, setXColumn] = useState(initialConfig?.xColumn || '');
+  const [yColumns, setYColumns] = useState<string[]>(initialConfig?.yColumns || []);
+  const [plotType, setPlotType] = useState<PlotConfigType['plotType']>(initialConfig?.plotType || 'line');
+  const [differentShapes, setDifferentShapes] = useState(initialConfig?.differentShapes ?? true);
 
   // Get columns suitable for X-axis (numeric, datetime, or text)
   const xAxisColumns = columns;
@@ -30,9 +31,10 @@ function PlotConfig({ columns, columnTypes, onConfigChange }: PlotConfigProps) {
   }, [columns, xColumn]);
 
   useEffect(() => {
-    // Emit config when valid
+    // Emit config when valid, preserving existing customization
     if (xColumn && yColumns.length > 0) {
       onConfigChange({
+        ...initialConfig,
         xColumn,
         yColumns,
         plotType,
@@ -85,9 +87,9 @@ function PlotConfig({ columns, columnTypes, onConfigChange }: PlotConfigProps) {
           </select>
         </div>
 
-        {/* Y-Axis Selection - Multi-select with checkboxes */}
+        {/* Y-Axis Selection - Multiple selection with checkboxes */}
         <div className="config-group">
-          <label htmlFor="y-axis">Y-Axis:</label>
+          <label htmlFor="y-axis">Y-Axis (Select one or more):</label>
           {yAxisColumns.length === 0 ? (
             <p className="no-numeric-warning">
               ⚠️ No numeric columns

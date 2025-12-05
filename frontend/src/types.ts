@@ -25,4 +25,28 @@ export interface PlotConfig {
   differentShapes?: boolean;
 }
 
+export interface SubplotConfig {
+  xColumn: string;
+  yColumns: string[];
+  title?: string;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
+  differentShapes?: boolean;
+}
+
+export interface SubplotsConfig {
+  numPlots: number;
+  rows: number;
+  cols: number;
+  plots: SubplotConfig[];
+  plotType: 'line' | 'scatter' | 'line+markers' | 'bar';  // Global plot type
+  // Global font settings
+  titleFontSize?: number;
+  titleFontWeight?: 'normal' | 'bold';
+  titleFontStyle?: 'normal' | 'italic';
+  axisFontSize?: number;
+  axisFontWeight?: 'normal' | 'bold';
+  axisFontStyle?: 'normal' | 'italic';
+}
+
 export type ColumnType = 'numeric' | 'datetime' | 'text';

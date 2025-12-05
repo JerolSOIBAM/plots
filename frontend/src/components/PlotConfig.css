@@ -49,6 +49,31 @@
   border-color: #667eea;
 }
 
+.config-select-multi {
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.config-select-multi:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.config-select-multi option {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.config-select-multi option:checked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
 .y-axis-multiselect {
   margin-top: 0.5rem;
 }
@@ -270,6 +295,24 @@
     background-color: #1a1a1a;
     border-color: #444;
     color: #fff;
+  }
+
+  .config-select:focus {
+    border-color: #8b9dff;
+  }
+
+  .config-select-multi {
+    background-color: #1a1a1a;
+    border-color: #444;
+    color: #ddd;
+  }
+
+  .config-select-multi:focus {
+    border-color: #8b9dff;
+  }
+
+  .config-select-multi option:checked {
+    background: linear-gradient(135deg, #8b9dff 0%, #9b7bc2 100%);
   }
 
   .multiselect-box {

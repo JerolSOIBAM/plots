@@ -69,6 +69,7 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  max-height: calc(100vh - 120px);
 }
 
 .sidebar-header {
@@ -151,7 +152,11 @@
 
 .sidebar-section {
   padding: 1.5rem;
-  flex: 1;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar-section:last-child {
+  border-bottom: none;
 }
 
 .sidebar-section h4 {
@@ -174,6 +179,35 @@
   border-bottom: 2px solid #ddd;
   padding: 0 1rem;
   gap: 0.5rem;
+  align-items: center;
+}
+
+.reset-btn-tab {
+  margin-left: auto;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reset-btn-tab:hover {
+  background-color: #5568d3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.reset-btn-tab:hover {
+  background-color: #5568d3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .tab {
@@ -209,6 +243,33 @@
   flex: 1;
   overflow-y: auto;
   background-color: #fafafa;
+}
+
+/* Plot and Subplots Tab Layouts */
+.plot-tab-layout,
+.subplots-tab-layout {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.config-panel {
+  width: 400px;
+  background-color: white;
+  border-right: 2px solid #e0e0e0;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.config-panel h3 {
+  margin: 0 0 1.5rem 0;
+  color: #667eea;
+  font-size: 1.3rem;
+}
+
+.plot-display-area {
+  flex: 1;
+  overflow-y: auto;
 }
 
 .empty-state {
@@ -270,8 +331,25 @@
     color: #667eea;
   }
 
+  .reset-btn-tab {
+    background-color: #8b9dff;
+  }
+
+  .reset-btn-tab:hover {
+    background-color: #7b8def;
+  }
+
   .tab-content {
     background-color: #1a1a1a;
+  }
+
+  .config-panel {
+    background-color: #2a2a2a;
+    border-right-color: #444;
+  }
+
+  .config-panel h3 {
+    color: #8b9dff;
   }
 
   .app-footer {

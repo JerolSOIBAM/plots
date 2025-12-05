@@ -1,0 +1,212 @@
+.subplots-display {
+  padding: 1.5rem;
+}
+
+.plot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.plot-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.4rem;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.export-btn {
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.plot-container {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.plot-info {
+  background: linear-gradient(135deg, #e0e7ff 0%, #f0e7ff 100%);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.plot-info p {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.subplots-customization {
+  margin-top: 2rem;
+}
+
+.subplots-customization > h3 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.customization-panel {
+  background: #2a2a2a;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.customization-summary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+  user-select: none;
+}
+
+.customization-summary::-webkit-details-marker {
+  display: none;
+}
+
+.customization-summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 0.3s;
+}
+
+.customization-panel[open] .customization-summary::before {
+  transform: rotate(90deg);
+}
+
+.customization-summary:hover {
+  opacity: 0.9;
+}
+
+.customization-content {
+  padding: 1.5rem;
+  background: #2a2a2a;
+}
+
+.custom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.custom-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.custom-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ddd;
+}
+
+.custom-input {
+  padding: 0.6rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: #1a1a1a;
+  color: #ddd;
+  transition: border-color 0.3s;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.font-section {
+  background: #1f1f1f;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.font-section h4 {
+  margin: 0 0 1rem 0;
+  color: #8b9dff;
+  font-size: 1rem;
+}
+
+.font-controls-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.font-controls-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.font-input,
+.font-select {
+  padding: 0.5rem;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  background-color: #1a1a1a;
+  color: #ddd;
+  min-width: 80px;
+}
+
+.font-input:focus,
+.font-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .plot-header h3 {
+    color: #ddd;
+  }
+
+  .plot-container {
+    background: #1a1a1a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .plot-info {
+    background: linear-gradient(135deg, #2a2a4a 0%, #3a2a4a 100%);
+  }
+
+  .plot-info p {
+    color: #ccc;
+  }
+
+  .subplots-customization > h3 {
+    color: #ddd;
+  }
+}
