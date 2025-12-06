@@ -41,7 +41,8 @@ function PlotConfig({ columns, columnTypes, onConfigChange, initialConfig }: Plo
         differentShapes,
       });
     }
-  }, [xColumn, yColumns, plotType, differentShapes, onConfigChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xColumn, yColumns, plotType, differentShapes]);
 
   const handleYColumnToggle = (column: string) => {
     setYColumns((prev) =>

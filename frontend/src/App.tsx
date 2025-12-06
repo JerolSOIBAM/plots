@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import './App.css'
 import FileUpload from './components/FileUpload'
 import DataPreview from './components/DataPreview'
@@ -19,16 +19,26 @@ function App() {
 
   const handleDataLoaded = (data: DataInfo) => {
     setDataInfo(data)
+    setPlotConfig(null)
+    setSubplotsConfig(null)
     setError(null)
     setActiveTab('preview')
   }
 
-  const handlePlotConfigChange = (config: PlotConfigType) => {
+  const handlePlotConfigChange = useCallback((config: PlotConfigType) => {
     setPlotConfig((prevConfig: PlotConfigType | null) => ({
       ...prevConfig,
       ...config,
     }))
-  }
+  }, [])
+
+  const handleSubplotsConfigChange = useCallback((config: SubplotsConfig | null) => {
+    setSubplotsConfig(config)
+  }, [])
+
+  const handlePlotConfigUpdate = useCallback((config: PlotConfigType) => {
+    setPlotConfig(config)
+  }, [])
 
   const handleReset = () => {
     setDataInfo(null)
@@ -141,7 +151,7 @@ function App() {
                         <PlotDisplay 
                           data={dataInfo.data}
                           config={plotConfig}
-                          onConfigUpdate={setPlotConfig}
+                          onConfigUpdate={handlePlotConfigUpdate}
                         />
                       </div>
                     )}
@@ -159,7 +169,7 @@ function App() {
                       <SubplotsManager
                         columns={dataInfo.columns}
                         columnTypes={dataInfo.column_types}
-                        onConfigChange={setSubplotsConfig}
+                        onConfigChange={handleSubplotsConfigChange}
                         initialConfig={subplotsConfig || undefined}
                       />
                     </div>

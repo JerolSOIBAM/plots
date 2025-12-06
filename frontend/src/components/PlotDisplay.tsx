@@ -13,48 +13,12 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
   const plotRef = useRef<any>(null);
   const [showCustomization, setShowCustomization] = useState(false);
 
-  const handleTitleChange = (value: string) => {
-    onConfigUpdate({ ...config, title: value || undefined });
-  };
-
-  const handleXAxisLabelChange = (value: string) => {
-    onConfigUpdate({ ...config, xAxisLabel: value || undefined });
-  };
-
-  const handleYAxisLabelChange = (value: string) => {
-    onConfigUpdate({ ...config, yAxisLabel: value || undefined });
-  };
-
-  const handleTitleFontSizeChange = (size: number) => {
-    onConfigUpdate({ ...config, titleFontSize: size });
-  };
-
-  const handleTitleFontWeightChange = (weight: 'normal' | 'bold') => {
-    onConfigUpdate({ ...config, titleFontWeight: weight });
-  };
-
-  const handleTitleFontStyleChange = (style: 'normal' | 'italic') => {
-    onConfigUpdate({ ...config, titleFontStyle: style });
-  };
-
-  const handleAxisFontSizeChange = (size: number) => {
-    onConfigUpdate({ ...config, axisFontSize: size });
-  };
-
-  const handleAxisFontWeightChange = (weight: 'normal' | 'bold') => {
-    onConfigUpdate({ ...config, axisFontWeight: weight });
-  };
-
-  const handleAxisFontStyleChange = (style: 'normal' | 'italic') => {
-    onConfigUpdate({ ...config, axisFontStyle: style });
-  };
-
-  const plotData = useMemo(() => {
+  const { plotData, layout } = useMemo(() => {
     const xValues = data.map((row) => row[config.xColumn]);
     const shapes = ['circle', 'square', 'diamond', 'cross', 'triangle-up', 'triangle-down', 'star', 'hexagon'];
 
     // Create a trace for each Y column
-    return config.yColumns.map((yCol, index) => {
+    const traces = config.yColumns.map((yCol, index) => {
       const yValues = data.map((row) => row[yCol]);
 
       let mode: string | undefined = 'lines';
@@ -97,9 +61,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
         marker: markerConfig,
       };
     });
-  }, [data, config]);
 
-  const layout = useMemo(() => {
     // Build font objects with proper styling
     const titleFont: any = {
       size: config.titleFontSize || 20,
@@ -141,7 +103,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
       yAxisText = `<i>${yAxisText}</i>`;
     }
 
-    return {
+    const layoutConfig = {
       title: {
         text: titleText,
         font: titleFont,
@@ -167,83 +129,9 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
         family: 'Arial, sans-serif',
       },
     };
-  }, [config]);
 
-  const handleExportPNG = () => {
-    if (plotRef.current && plotRef.current.el) {
-      const gd = plotRef.current.el;
-      const Plotly = (window as any).Plotly;
-      if (Plotly && Plotly.toImage) {
-        Plotly.toImage(gd, {
-          format: 'png',
-          width: 1600,
-          height: 1000,
-        }).then((dataUrl: string) => {
-          const a = document.createElement('a');
-          a.href = dataUrl;
-          a.download = `plot_${Date.now()}.png`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }).catch((err: any) => {
-          console.error('PNG export failed:', err);
-          alert('PNG export failed. Please try again.');
-        });
-      }
-    }
-  };
-
-  const handleExportSVG = () => {
-    if (plotRef.current && plotRef.current.el) {
-      const gd = plotRef.current.el;
-      const Plotly = (window as any).Plotly;
-      if (Plotly && Plotly.toImage) {
-        Plotly.toImage(gd, {
-          format: 'svg',
-          width: 1600,
-          height: 1000,
-        }).then((dataUrl: string) => {
-          const a = document.createElement('a');
-          a.href = dataUrl;
-          a.download = `plot_${Date.now()}.svg`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }).catch((err: any) => {
-          console.error('SVG export failed:', err);
-          alert('SVG export failed. Please try again.');
-        });
-      }
-    }
-  };
-
-  const handleExportPDF = () => {
-    if (plotRef.current && plotRef.current.el) {
-      const gd = plotRef.current.el;
-      const Plotly = (window as any).Plotly;
-      if (Plotly && Plotly.toImage) {
-        // PDF export via PNG conversion (Plotly.js doesn't support direct PDF in browser)
-        Plotly.toImage(gd, {
-          format: 'png',
-          width: 1600,
-          height: 1000,
-        }).then((dataUrl: string) => {
-          // Note: True PDF would require server-side conversion
-          // For now, we'll export high-res PNG
-          const a = document.createElement('a');
-          a.href = dataUrl;
-          a.download = `plot_${Date.now()}.png`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          alert('Note: Exported as high-resolution PNG. PDF export requires server-side processing.');
-        }).catch((err: any) => {
-          console.error('Export failed:', err);
-          alert('Export failed. Please try again.');
-        });
-      }
-    }
-  };
+    return { plotData: traces, layout: layoutConfig };
+  }, [data, config]);
 
   const handleExportHTML = () => {
     if (plotRef.current) {
@@ -303,8 +191,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
 
       <div className="plot-info">
         <p>
-          💡 <strong>Tip:</strong> Hover over data points for details. Use the toolbar
-          to zoom, pan, or download the plot.
+          💡 <strong>Tip:</strong> Hover over data points for details. Use the toolbar to zoom, pan, or download.
         </p>
       </div>
 
@@ -320,8 +207,8 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
               <input
                 id="custom-title"
                 type="text"
-                value={config.title || ''}
-                onChange={(e) => handleTitleChange(e.target.value)}
+                defaultValue={config.title || ''}
+                onBlur={(e) => onConfigUpdate({ ...config, title: e.target.value || undefined })}
                 placeholder="Auto-generated"
                 className="custom-input"
               />
@@ -332,8 +219,8 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
               <input
                 id="custom-x-label"
                 type="text"
-                value={config.xAxisLabel || ''}
-                onChange={(e) => handleXAxisLabelChange(e.target.value)}
+                defaultValue={config.xAxisLabel || ''}
+                onBlur={(e) => onConfigUpdate({ ...config, xAxisLabel: e.target.value || undefined })}
                 placeholder="Column name"
                 className="custom-input"
               />
@@ -344,8 +231,8 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
               <input
                 id="custom-y-label"
                 type="text"
-                value={config.yAxisLabel || ''}
-                onChange={(e) => handleYAxisLabelChange(e.target.value)}
+                defaultValue={config.yAxisLabel || ''}
+                onBlur={(e) => onConfigUpdate({ ...config, yAxisLabel: e.target.value || undefined })}
                 placeholder="Column name"
                 className="custom-input"
               />
@@ -360,7 +247,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
                 <input
                   type="number"
                   value={config.titleFontSize || 20}
-                  onChange={(e) => handleTitleFontSizeChange(Number(e.target.value))}
+                  onChange={(e) => onConfigUpdate({ ...config, titleFontSize: Number(e.target.value) })}
                   min="10"
                   max="48"
                   className="font-input"
@@ -370,7 +257,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
                 Weight:
                 <select
                   value={config.titleFontWeight || 'bold'}
-                  onChange={(e) => handleTitleFontWeightChange(e.target.value as 'normal' | 'bold')}
+                  onChange={(e) => onConfigUpdate({ ...config, titleFontWeight: e.target.value as 'normal' | 'bold' })}
                   className="font-select"
                 >
                   <option value="normal">Normal</option>
@@ -381,7 +268,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
                 Style:
                 <select
                   value={config.titleFontStyle || 'normal'}
-                  onChange={(e) => handleTitleFontStyleChange(e.target.value as 'normal' | 'italic')}
+                  onChange={(e) => onConfigUpdate({ ...config, titleFontStyle: e.target.value as 'normal' | 'italic' })}
                   className="font-select"
                 >
                   <option value="normal">Normal</option>
@@ -399,7 +286,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
                 <input
                   type="number"
                   value={config.axisFontSize || 14}
-                  onChange={(e) => handleAxisFontSizeChange(Number(e.target.value))}
+                  onChange={(e) => onConfigUpdate({ ...config, axisFontSize: Number(e.target.value) })}
                   min="8"
                   max="32"
                   className="font-input"
@@ -409,7 +296,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
                 Weight:
                 <select
                   value={config.axisFontWeight || 'normal'}
-                  onChange={(e) => handleAxisFontWeightChange(e.target.value as 'normal' | 'bold')}
+                  onChange={(e) => onConfigUpdate({ ...config, axisFontWeight: e.target.value as 'normal' | 'bold' })}
                   className="font-select"
                 >
                   <option value="normal">Normal</option>
@@ -420,7 +307,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
                 Style:
                 <select
                   value={config.axisFontStyle || 'normal'}
-                  onChange={(e) => handleAxisFontStyleChange(e.target.value as 'normal' | 'italic')}
+                  onChange={(e) => onConfigUpdate({ ...config, axisFontStyle: e.target.value as 'normal' | 'italic' })}
                   className="font-select"
                 >
                   <option value="normal">Normal</option>

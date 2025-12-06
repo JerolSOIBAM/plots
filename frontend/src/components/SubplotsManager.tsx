@@ -76,7 +76,8 @@ function SubplotsManager({ columns, columnTypes, onConfigChange, initialConfig }
     } else {
       onConfigChange(null);
     }
-  }, [plots, numPlots, rows, cols, plotType, titleFontSize, titleFontWeight, titleFontStyle, axisFontSize, axisFontWeight, axisFontStyle, onConfigChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plots, numPlots, rows, cols, plotType, titleFontSize, titleFontWeight, titleFontStyle, axisFontSize, axisFontWeight, axisFontStyle]);
 
   const handlePlotChange = (index: number, config: SubplotConfig) => {
     const newPlots = [...plots];
