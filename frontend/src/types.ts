@@ -9,6 +9,16 @@ export interface DataInfo {
   data: Record<string, any>[];
 }
 
+export interface PlotAnnotation {
+  x: number | string;
+  y: number;
+  text: string;
+  color?: string;
+  fontSize?: number;
+  xanchor?: 'auto' | 'left' | 'center' | 'right';
+  yanchor?: 'auto' | 'top' | 'middle' | 'bottom';
+}
+
 export interface PlotConfig {
   xColumn: string;
   yColumns: string[];
@@ -23,6 +33,7 @@ export interface PlotConfig {
   axisFontWeight?: 'normal' | 'bold';
   axisFontStyle?: 'normal' | 'italic';
   differentShapes?: boolean;
+  annotations?: PlotAnnotation[];
 }
 
 export interface SubplotConfig {

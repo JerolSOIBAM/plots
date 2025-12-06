@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import Plot from 'react-plotly.js';
-import { PlotConfig } from '../types';
+import { PlotConfig, PlotAnnotation } from '../types';
 import './PlotDisplay.css';
 
 interface PlotDisplayProps {
@@ -12,6 +12,11 @@ interface PlotDisplayProps {
 function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
   const plotRef = useRef<any>(null);
   const [showCustomization, setShowCustomization] = useState(false);
+  const [showAnnotations, setShowAnnotations] = useState(false);
+  const [annotations, setAnnotations] = useState<PlotAnnotation[]>(config.annotations || []);
+  const [newAnnotation, setNewAnnotation] = useState({ x: '', y: '', text: '', color: '#000000', fontSize: 12, xanchor: 'auto' as const, yanchor: 'auto' as const });
+  const [annotationMode, setAnnotationMode] = useState(false);
+  const [pendingAnnotation, setPendingAnnotation] = useState<{ x: number | string; y: number } | null>(null);
 
   const { plotData, layout } = useMemo(() => {
     const xValues = data.map((row) => row[config.xColumn]);
@@ -128,10 +133,81 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
       font: {
         family: 'Arial, sans-serif',
       },
+      annotations: annotations.map(ann => ({
+        x: ann.x,
+        y: ann.y,
+        text: ann.text,
+        xanchor: ann.xanchor || 'auto',
+        yanchor: ann.yanchor || 'auto',
+        showarrow: true,
+        arrowhead: 2,
+        arrowsize: 1,
+        arrowwidth: 2,
+        arrowcolor: ann.color || '#636363',
+        ax: 0,
+        ay: -40,
+        font: {
+          size: ann.fontSize || 12,
+          color: ann.color || '#000',
+        },
+        bgcolor: 'rgba(255, 255, 255, 0.8)',
+        bordercolor: ann.color || '#636363',
+        borderwidth: 1,
+        borderpad: 4,
+      })),
     };
 
     return { plotData: traces, layout: layoutConfig };
-  }, [data, config]);
+  }, [data, config, annotations]);
+
+  const handleAddAnnotation = () => {
+    if (newAnnotation.x && newAnnotation.y && newAnnotation.text) {
+      const updatedAnnotations = [...annotations, {
+        x: isNaN(Number(newAnnotation.x)) ? newAnnotation.x : Number(newAnnotation.x),
+        y: Number(newAnnotation.y),
+        text: newAnnotation.text,
+        color: newAnnotation.color,
+        fontSize: newAnnotation.fontSize,
+        xanchor: newAnnotation.xanchor,
+        yanchor: newAnnotation.yanchor,
+      }];
+      setAnnotations(updatedAnnotations);
+      onConfigUpdate({ ...config, annotations: updatedAnnotations });
+      setNewAnnotation({ x: '', y: '', text: '', color: '#000000', fontSize: 12, xanchor: 'auto', yanchor: 'auto' });
+    }
+  };
+
+  const handleRemoveAnnotation = (index: number) => {
+    const updatedAnnotations = annotations.filter((_, i) => i !== index);
+    setAnnotations(updatedAnnotations);
+    onConfigUpdate({ ...config, annotations: updatedAnnotations });
+  };
+
+  const handlePlotClick = (event: any) => {
+    if (annotationMode && event.points && event.points.length > 0) {
+      const point = event.points[0];
+      setPendingAnnotation({ x: point.x, y: point.y });
+    }
+  };
+
+  const handleAddPendingAnnotation = () => {
+    if (pendingAnnotation && newAnnotation.text) {
+      const updatedAnnotations = [...annotations, {
+        x: pendingAnnotation.x,
+        y: pendingAnnotation.y,
+        text: newAnnotation.text,
+        color: newAnnotation.color,
+        fontSize: newAnnotation.fontSize,
+        xanchor: newAnnotation.xanchor,
+        yanchor: newAnnotation.yanchor,
+      }];
+      setAnnotations(updatedAnnotations);
+      onConfigUpdate({ ...config, annotations: updatedAnnotations });
+      setNewAnnotation({ x: '', y: '', text: '', color: '#000000', fontSize: 12, xanchor: 'auto', yanchor: 'auto' });
+      setPendingAnnotation(null);
+      setAnnotationMode(false);
+    }
+  };
 
   const handleExportHTML = () => {
     if (plotRef.current) {
@@ -186,6 +262,7 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
             modeBarButtonsToRemove: ['lasso2d', 'select2d'],
           }}
           style={{ width: '100%', height: '600px' }}
+          onClick={handlePlotClick}
         />
       </div>
 
@@ -315,6 +392,223 @@ function PlotDisplay({ data, config, onConfigUpdate }: PlotDisplayProps) {
                 </select>
               </label>
             </div>
+          </div>
+        </div>
+      </details>
+
+      {/* Annotations Panel */}
+      <details className="customization-panel" open={showAnnotations}>
+        <summary className="customization-summary" onClick={() => setShowAnnotations(!showAnnotations)}>
+          📍 Add Annotations
+        </summary>
+        <div className="customization-content">
+          <div className="annotations-section">
+            <div className="annotation-mode-toggle">
+              <button 
+                onClick={() => {
+                  setAnnotationMode(!annotationMode);
+                  setPendingAnnotation(null);
+                  setNewAnnotation({ x: '', y: '', text: '', color: '#000000', fontSize: 12, xanchor: 'auto', yanchor: 'auto' });
+                }}
+                className={`mode-toggle-btn ${annotationMode ? 'active' : ''}`}
+              >
+                {annotationMode ? '🎯 Click Mode Active - Click on plot to add label' : '🎯 Enable Click-to-Annotate Mode'}
+              </button>
+            </div>
+
+            {pendingAnnotation && (
+              <div className="pending-annotation">
+                <h4>Add Label at ({pendingAnnotation.x}, {pendingAnnotation.y})</h4>
+                <div className="custom-group">
+                  <label htmlFor="pending-text">Label Text:</label>
+                  <input
+                    id="pending-text"
+                    type="text"
+                    value={newAnnotation.text}
+                    onChange={(e) => setNewAnnotation({ ...newAnnotation, text: e.target.value })}
+                    placeholder="Enter label text"
+                    className="custom-input"
+                    autoFocus
+                  />
+                </div>
+                <div className="annotation-input-grid">
+                  <div className="custom-group">
+                    <label htmlFor="pending-color">Color:</label>
+                    <input
+                      id="pending-color"
+                      type="color"
+                      value={newAnnotation.color}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, color: e.target.value })}
+                      className="custom-input"
+                    />
+                  </div>
+                  <div className="custom-group">
+                    <label htmlFor="pending-font-size">Font Size:</label>
+                    <input
+                      id="pending-font-size"
+                      type="number"
+                      value={newAnnotation.fontSize}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, fontSize: parseInt(e.target.value) || 12 })}
+                      min="8"
+                      max="48"
+                      className="custom-input"
+                    />
+                  </div>
+                  <div className="custom-group">
+                    <label htmlFor="pending-xanchor">H-Align:</label>
+                    <select
+                      id="pending-xanchor"
+                      value={newAnnotation.xanchor}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, xanchor: e.target.value as any })}
+                      className="custom-input"
+                    >
+                      <option value="auto">Auto</option>
+                      <option value="left">Left</option>
+                      <option value="center">Center</option>
+                      <option value="right">Right</option>
+                    </select>
+                  </div>
+                  <div className="custom-group">
+                    <label htmlFor="pending-yanchor">V-Align:</label>
+                    <select
+                      id="pending-yanchor"
+                      value={newAnnotation.yanchor}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, yanchor: e.target.value as any })}
+                      className="custom-input"
+                    >
+                      <option value="auto">Auto</option>
+                      <option value="top">Top</option>
+                      <option value="middle">Middle</option>
+                      <option value="bottom">Bottom</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="pending-actions">
+                  <button onClick={handleAddPendingAnnotation} className="add-annotation-btn">
+                    ✓ Add Label
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setPendingAnnotation(null);
+                      setNewAnnotation({ x: '', y: '', text: '', color: '#000000', fontSize: 12, xanchor: 'auto', yanchor: 'auto' });
+                    }} 
+                    className="cancel-btn"
+                  >
+                    ✕ Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!annotationMode && !pendingAnnotation && (
+              <>
+                <h4>Or Add Label Manually</h4>
+                <div className="annotation-input-grid">
+                  <div className="custom-group">
+                    <label htmlFor="ann-x">X Position:</label>
+                    <input
+                      id="ann-x"
+                      type="text"
+                      value={newAnnotation.x}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, x: e.target.value })}
+                      placeholder="e.g., 100 or date"
+                      className="custom-input"
+                    />
+                  </div>
+                  <div className="custom-group">
+                    <label htmlFor="ann-y">Y Position:</label>
+                    <input
+                      id="ann-y"
+                      type="number"
+                      value={newAnnotation.y}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, y: e.target.value })}
+                      placeholder="e.g., 25"
+                      className="custom-input"
+                    />
+                  </div>
+                  <div className="custom-group">
+                    <label htmlFor="ann-text">Label Text:</label>
+                    <input
+                      id="ann-text"
+                      type="text"
+                      value={newAnnotation.text}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, text: e.target.value })}
+                      placeholder="e.g., Peak"
+                      className="custom-input"
+                    />
+                  </div>
+                  <div className="custom-group">
+                    <label htmlFor="ann-color">Color:</label>
+                    <input
+                      id="ann-color"
+                      type="color"
+                      value={newAnnotation.color}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, color: e.target.value })}
+                      className="custom-input"
+                    />
+                  </div>
+                  <div className="custom-group">
+                    <label htmlFor="ann-font-size">Font Size:</label>
+                    <input
+                      id="ann-font-size"
+                      type="number"
+                      value={newAnnotation.fontSize}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, fontSize: parseInt(e.target.value) || 12 })}
+                      min="8"
+                      max="48"
+                      className="custom-input"
+                    />
+                  </div>
+                  <div className="custom-group">
+                    <label htmlFor="ann-xanchor">H-Align:</label>
+                    <select
+                      id="ann-xanchor"
+                      value={newAnnotation.xanchor}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, xanchor: e.target.value as any })}
+                      className="custom-input"
+                    >
+                      <option value="auto">Auto</option>
+                      <option value="left">Left</option>
+                      <option value="center">Center</option>
+                      <option value="right">Right</option>
+                    </select>
+                  </div>
+                  <div className="custom-group">
+                    <label htmlFor="ann-yanchor">V-Align:</label>
+                    <select
+                      id="ann-yanchor"
+                      value={newAnnotation.yanchor}
+                      onChange={(e) => setNewAnnotation({ ...newAnnotation, yanchor: e.target.value as any })}
+                      className="custom-input"
+                    >
+                      <option value="auto">Auto</option>
+                      <option value="top">Top</option>
+                      <option value="middle">Middle</option>
+                      <option value="bottom">Bottom</option>
+                    </select>
+                  </div>
+                  <div className="custom-group">
+                    <button onClick={handleAddAnnotation} className="add-annotation-btn">
+                      ➕ Add Label
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {annotations.length > 0 && (
+              <div className="annotations-list">
+                <h4>Current Labels</h4>
+                {annotations.map((ann, index) => (
+                  <div key={index} className="annotation-item">
+                    <span>📍 {ann.text} at ({ann.x}, {ann.y})</span>
+                    <button onClick={() => handleRemoveAnnotation(index)} className="remove-btn">
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </details>
